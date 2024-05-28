@@ -135,8 +135,8 @@
 //   // );
 // }
 
-import { useEffect, useLayoutEffect } from 'react';
-import { TouchableOpacity, View, Text, Button } from 'react-native';
+import { useEffect, useLayoutEffect, useState } from 'react';
+import { TouchableOpacity, View, Text, Button, TextInput, Touchable } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import tw, { useDeviceContext } from 'twrnc';
@@ -146,6 +146,9 @@ import MasonryList from '@react-native-seoul/masonry-list'
 import { useSearchNotesQuery, useAddNoteMutation, useDeleteNoteMutation } from './db';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+// const [text, setText] = useState();
+// const noteTitle = [text,setText] => 
+
 function HomeScreen({ navigation }) {
   const { data: searchData, error, isLoading } = useSearchNotesQuery("");
   const [ addNote, { data: addNoteData, error: addNoteError }] = useAddNoteMutation();
@@ -153,19 +156,44 @@ function HomeScreen({ navigation }) {
   
   useEffect(() => {
     if (addNoteData != undefined) {
-      console.log(addNoteData.title);
-      navigation.navigate("Edit", {data: addNoteData});
+      // console.log(addNoteData.title);
+      navigation.navigate("Edit", {data: addNoteData, deleteNote});
     }
   }, [addNoteData]);
 
+  //this added an icon yes but you could press anywhere and it would delete.
+  // const renderItem = ({ item }) => (
+  //   <TouchableOpacity onPress={() => deleteNote(item) } style={tw`w-[98%] mb-0.5 mx-auto bg-purple-300 rounded-sm px-1`}> 
+  //     <Text>{item.title} {item.id}</Text>
+  //     <Icon name="trash" size={20} color="#000" />
+  //   </TouchableOpacity>
+  // //   <TouchableOpacity onPress={() => deleteNote(item) } style={tw`w-[98%] mb-0.5 mx-auto bg-purple-300 rounded-sm px-1`}> 
+  // //     <Icon name="trash" size={20} color="#000" />
+  // // </TouchableOpacity>
+  // );
+
+
+  //this adds an icon to the side and only that icon being pressed deletes the note.
   const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => deleteNote(item) } style={tw`w-[98%] mb-0.5 mx-auto bg-purple-300 rounded-sm px-1`}> 
-      <Text>{item.title} {item.id}</Text>
+    // <TouchableOpacity onPress={() => navigation.navigate("Edit", {id: item.id})}>
+    <TouchableOpacity onPress={() => navigation.navigate("Edit", {data: item})}>
+      <View style={tw`w-[98%] mb-0.5 mx-auto bg-orange-300 rounded-sm px-1 flex-row items-center justify-between`}>
+      {/* <Text style={tw`flex-1`}> {item.title} ? {item.id} </Text> */}
+      <Text style={tw`flex-1`}>{item.content}</Text>
+      <TouchableOpacity onPress={() => deleteNote(item)}>
+        <Icon name="trash" size={20} color="#000" />
+      </TouchableOpacity>
+      </View>
     </TouchableOpacity>
-  )
+    
+  );
 
   return (
-    <View style={tw`flex-1 items-center justify-center bg-purple-400`}>
+    <View style={tw`flex-1 items-center justify-center bg-red-400`}>
+      <View style={tw`w-full h-15 py-2 px-3 rounded-xl bg-green-300 flex-row items-center mb-3 mr-3 ml-1`}>
+        <TextInput placeholder="Search" style={tw`w-full h-12 p-2 bg-blue-100 rounded-lg m-2 text-gray-400`} />
+        {/* <Text style={tw`text-left`}>Search Bar Goes Here</Text> */}
+      </View>
       {searchData ? 
         <MasonryList
           style={tw`px-0.5 pt-0.5 pb-20`}
@@ -177,7 +205,8 @@ function HomeScreen({ navigation }) {
         />  
         : <></>
       }
-      <TouchableOpacity onPress={() => { addNote({title: "test", content: "content"}); }} style={tw`bg-blue-500 rounded-full absolute bottom-[5%] right-8 mx-auto items-center flex-1 justify-center w-12 h-12`}>
+      {/* this is the place where the title should be changed based on input.  */}
+      <TouchableOpacity onPress={() => { addNote({title: "title", content: "content"}); }} style={tw`bg-blue-500 rounded-full absolute bottom-[5%] right-8 mx-auto items-center flex-1 justify-center w-12 h-12`}>
         <Text style={tw`text-white text-center text-3xl mt--1`}>+</Text>
       </TouchableOpacity>
     </View>
@@ -185,13 +214,33 @@ function HomeScreen({ navigation }) {
 }
 
 function EditScreen({ route, navigation }) {
+  const [text, setText] = useState();
+  
   useLayoutEffect(() => {
-    navigation.setOptions({ title: route.params.data.title });
+    //i can have this place be the one where i change the title based on input
+    navigation.setOptions({ 
+      title: "Hello",
+      headerRight: () => (
+        <TouchableOpacity onPress={() => { deleteNote(data); navigation.goBack(); }}>
+          <Icon name="trash" size={30} color="#000" style={tw`mr-4`} />
+        </TouchableOpacity>
+      )
+    });
   }, []);
 
   return (
-    <View style={tw`flex-1 items-center justify-center bg-purple-400`}>
-      <Text style={tw`text-lg text-white`}>Edit Screen {route.params.data.title} {route.params.data.id}</Text>
+    // <View style={tw`flex-1 items-center justify-center bg-purple-400`}>
+    //   <Text style={tw`text-lg text-white`}>Sup my dudes {route.params.data.title} {route.params.data.id}</Text>
+    // </View>
+    <View style={tw`flex-1 items-left bg-yellow-50`}>
+      <TextInput 
+      style={tw`w-[98%] h-48 bg-white rounded-lg text-black py-2 pl-2 my-1`} 
+      multiline={true} 
+      onChangeText={(newValue) => setText(newValue)}/>
+      <Text style={tw`text-sm text-black`}>
+        Edit Screen {route.params.data.title} {route.params.data.id}
+      </Text>
+      <Text>{text}</Text>
     </View>
   );
 }
@@ -200,6 +249,7 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   useDeviceContext(tw);
+  // const [text, setText] = useState();
 
   return (
     <Provider store={store}>
@@ -218,13 +268,13 @@ export default function App() {
           />
           <Stack.Screen
             options={{
-              headerStyle: tw`bg-gray-300 border-0`,
+              headerStyle: tw`bg-green-300 border-0`,
               headerTintColor: '#fff',
               // headerTitleStyle: tw`font-bold`,
               headerShadowVisible: false, // gets rid of border on device
               headerRight: () => ( 
                  <TouchableOpacity>
-                    <Icon name="trash" size={30} color="#000" style={tw`mr-4`} />
+                    <Icon name="trash" size={30} color="#000" style={tw`mr-4`} onPress={() => deleteNote(item) }/>
                  </TouchableOpacity>
                  ),
             }}
