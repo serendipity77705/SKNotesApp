@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { TouchableOpacity, View, Text, Button, TextInput, Touchable } from 'react-native';
+import { TouchableOpacity, View, Text, TextInput } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import tw, { useDeviceContext } from 'twrnc';
@@ -8,7 +8,6 @@ import { store } from './store';
 import MasonryList from '@react-native-seoul/masonry-list'
 import { useSearchNotesQuery, useAddNoteMutation, useDeleteNoteMutation, useUpdateNoteMutation } from './db';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { removeListener } from '@reduxjs/toolkit';
 
 function HomeScreen({ navigation }) {
   const [search, setSearch] = useState("");
@@ -23,27 +22,28 @@ function HomeScreen({ navigation }) {
     } 
   }, [addNoteData]);
 
-  //this adds an icon to the side and only that icon being pressed deletes the note.
+  //this is for the home screen, showing the notes that you made
   const renderItem = ({ item }) => (
     <TouchableOpacity onPress={() => navigation.navigate("Edit", {data: item})}>
-      <View style={tw`w-[98%] mb-0.5 mx-auto bg-orange-300 rounded-sm px-1 items-center justify-between`}>
+      <View style={tw`w-[98%] mb-0.5 mx-auto bg-yellow-300 rounded-sm px-1 items-center justify-between`}>
         <View>
-          <Text style={tw`font-bold text-left`}>{item.title}</Text>
+          <Text style={tw`font-bold justify-items-start`}>{item.title}</Text>
         </View>
-          <Text style={[tw`flex-1`, { maxHeight: 250, overflow: 'hidden' }]}>
+          <Text style={[tw`flex-1 justify-items-start`, { maxHeight: 250, overflow: 'hidden' }]}>
             {item.content}
           </Text>
           <TouchableOpacity onPress={() => deleteNote(item)}>
-            <Icon name="trash" size={20} color="#000" />
+            <Icon name="trash" size={20} color="#000" style={tw`justify-items-start`}/>
           </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
 
+  //shows all the notes that you made
   return (
-    <View style={tw`flex-1 items-center justify-center bg-red-400`}>
-      <View style={tw`w-full h-15 py-2 px-3 rounded-xl bg-green-300 flex-row items-center mb-3 mr-3 ml-1`}>
-        <TextInput placeholder="Search" style={tw`w-full h-12 p-2 bg-blue-100 rounded-lg m-2 text-gray-400`} value={search} onChangeText={setSearch}/>
+    <View style={tw`flex-1 items-center justify-center bg-white`}>
+      <View style={tw`w-full h-15 py-2 px-3 rounded-sm bg-gray-200 flex-row items-center mb-3 mr-3 ml-1`}>
+        <TextInput placeholder="Search" style={tw`w-full h-12 p-2 rounded-lg m-2 text-gray-400`} value={search} onChangeText={setSearch}/>
       </View>
       {searchData ? 
         <MasonryList
@@ -56,7 +56,7 @@ function HomeScreen({ navigation }) {
         />  
         : <></>
       }
-      {/* this is the place where the title should be changed based on input.  */}
+      {/* this is where the + symbol is created */}
       <TouchableOpacity onPress={() => { addNote({title: "", content: ""}); }} style={tw`bg-blue-500 rounded-full absolute bottom-[5%] right-8 mx-auto items-center flex-1 justify-center w-12 h-12`}>
         <Text style={tw`text-white text-center text-3xl mt--1`}>+</Text>
       </TouchableOpacity>
@@ -71,30 +71,21 @@ function EditScreen({ route, navigation }) {
 
   const [ updateNote ] = useUpdateNoteMutation();
   const[ deleteNote ] = useDeleteNoteMutation();
-
-  //doesn't register any new note being made
-  // navigation.addListener('beforeRemove', (e) => {
-  //   if (text == "") {
-  //     console.log("should delete");
-  //     deleteNote(data);
-  //   }
-  // });
-  // return removeListener;
   
   useLayoutEffect(() => {
     //i can have this place be the one where i change the title based on input
-    navigation.setOptions({ 
+    navigation.setOptions({
       headerTitle: () => (
         <TextInput 
-          style={tw`w-[100%] h-[100%] bg-green text-white font-bold text-xl`} 
+          style={tw`w-[80%] flex-row justify-end h-[100%] text-white font-bold text-xl`} 
           multiline={false} 
           value={title}
           onChangeText={(newValue) => setTitle(newValue)}
         />
       ),
       headerRight: () => (
-        <TouchableOpacity onPress={() => { deleteNote(data); navigation.goBack(); }}>
-          <Icon name="trash" size={30} color="#000" style={tw`mr-4`} />
+        <TouchableOpacity style={tw`w-[5%]`} onPress={() => { deleteNote(data); navigation.goBack(); }}>
+          <Icon name="trash" size={30} color="#fff" style={tw`mr-4`} />
         </TouchableOpacity>
       )
     });
@@ -132,8 +123,8 @@ export default function App() {
           <Stack.Screen
             options={{
               title: "Notes",
-              headerStyle: tw`bg-blue-50 border-0`,
-              headerTintColor: '#000',
+              headerStyle: tw`bg-[#1c0941] border-0`,
+              headerTintColor: '#FFF',
               headerTitleStyle: tw`font-bold`,
               headerTitleAlign: 'center',
               headerShadowVisible: false, // gets rid of border on device
@@ -143,14 +134,9 @@ export default function App() {
           />
           <Stack.Screen
             options={{
-              headerStyle: tw`bg-purple-300 border-0`,
+              headerStyle: tw`bg-[#1c0941] border-0 w-[80%]`,
               headerTintColor: '#fff',
               headerShadowVisible: false, // gets rid of border on device
-              headerRight: () => ( 
-                 <TouchableOpacity>
-                    <Icon name="trash" size={30} color="#000" style={tw`mr-4`} onPress={() => deleteNote(item) }/>
-                 </TouchableOpacity>
-                 ),
             }}
             name="Edit"
             component={EditScreen}
