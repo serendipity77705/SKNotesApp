@@ -27,15 +27,12 @@ function HomeScreen({ navigation }) {
     <TouchableOpacity onPress={() => navigation.navigate("Edit", {data: item})}>
       <View style={tw`w-[98%] mb-0.5 mx-auto bg-yellow-300 rounded-sm px-1 items-center justify-between`}>
         <View>
-          <Text style={tw`font-bold justify-items-start`}>{item.title}</Text>
+          <Text style={tw`font-bold text-lg justify-items-start`}>{item.title}</Text>
         </View>
           <Text style={[tw`flex-1 justify-items-start`, { maxHeight: 250, overflow: 'hidden' }]}>
             {item.content}
           </Text>
-          <TouchableOpacity onPress={() => deleteNote(item)}>
-            <Icon name="trash" size={20} color="#000" style={tw`justify-items-start`}/>
-          </TouchableOpacity>
-      </View>
+      </View> 
     </TouchableOpacity>
   );
 
@@ -81,6 +78,7 @@ function EditScreen({ route, navigation }) {
           multiline={false} 
           value={title}
           onChangeText={(newValue) => setTitle(newValue)}
+          placeholder="Title goes here" 
         />
       ),
       headerRight: () => (
@@ -106,6 +104,7 @@ function EditScreen({ route, navigation }) {
       multiline={true} 
       value={text}
       onChangeText={(newValue) => setText(newValue)}
+      placeholder="Notes go here"
       />
     </View>
   );
