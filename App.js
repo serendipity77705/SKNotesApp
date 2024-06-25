@@ -27,9 +27,9 @@ function HomeScreen({ navigation }) {
     <TouchableOpacity onPress={() => navigation.navigate("Edit", {data: item})}>
       <View style={tw`w-[98%] mb-0.5 mx-auto bg-yellow-300 rounded-sm px-1 items-center justify-between`}>
         <View>
-          <Text style={tw`font-bold text-lg justify-items-start`}>{item.title}</Text>
+          <Text style={tw`font-bold text-lg`}>{item.title}</Text>
         </View>
-          <Text style={[tw`flex-1 justify-items-start`, { maxHeight: 250, overflow: 'hidden' }]}>
+          <Text style={[tw`flex-1`, { maxHeight: 250, overflow: 'hidden' }]}>
             {item.content}
           </Text>
       </View> 
@@ -74,7 +74,7 @@ function EditScreen({ route, navigation }) {
     navigation.setOptions({
       headerTitle: () => (
         <TextInput 
-          style={tw`w-[80%] flex-row justify-end h-[100%] text-white font-bold text-xl`} 
+          style={tw`flex-row justify-end h-[100%] text-white font-bold text-xl`} 
           multiline={false} 
           value={title}
           onChangeText={(newValue) => setTitle(newValue)}
@@ -82,7 +82,8 @@ function EditScreen({ route, navigation }) {
         />
       ),
       headerRight: () => (
-        <TouchableOpacity style={tw`w-[5%]`} onPress={() => { deleteNote(data); navigation.goBack(); }}>
+        <TouchableOpacity style={tw`w-[40%] sm:w-[5%]`} onPress={() => { deleteNote(data); navigation.goBack(); }}>
+        {/* <TouchableOpacity style={tw'w-12 mr-4 flex items-center justify-center'} > */}
           <Icon name="trash" size={30} color="#fff" style={tw`mr-4`} />
         </TouchableOpacity>
       )
@@ -98,7 +99,7 @@ function EditScreen({ route, navigation }) {
   }, [text, title, updateNote, data.id]);
 
   return (
-    <View style={tw`flex-1 items-left bg-white`}>
+    <View style={tw`flex-1 bg-white`}>
       <TextInput 
       style={tw`w-[100%] h-[100%] bg-white text-black py-2 pl-2 my-1`} 
       multiline={true} 
@@ -133,7 +134,7 @@ export default function App() {
           />
           <Stack.Screen
             options={{
-              headerStyle: tw`bg-[#1c0941] border-0 w-[80%]`,
+              headerStyle: tw`bg-[#1c0941] border-0`,
               headerTintColor: '#fff',
               headerShadowVisible: false, // gets rid of border on device
             }}
