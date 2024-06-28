@@ -74,7 +74,7 @@ function EditScreen({ route, navigation }) {
     navigation.setOptions({
       headerTitle: () => (
         <TextInput 
-          style={tw`flex-row justify-end h-[100%] text-white font-bold text-xl`} 
+          style={tw`flex-row justify-end h-[100%] text-black font-bold text-xl`} 
           multiline={false} 
           value={title}
           onChangeText={(newValue) => setTitle(newValue)}
@@ -83,7 +83,6 @@ function EditScreen({ route, navigation }) {
       ),
       headerRight: () => (
         <TouchableOpacity style={tw`w-[40%] sm:w-[5%]`} onPress={() => { deleteNote(data); navigation.goBack(); }}>
-        {/* <TouchableOpacity style={tw'w-12 mr-4 flex items-center justify-center'} > */}
           <Icon name="trash" size={30} color="#fff" style={tw`mr-4`} />
         </TouchableOpacity>
       )
@@ -134,7 +133,7 @@ export default function App() {
           />
           <Stack.Screen
             options={{
-              headerStyle: tw`bg-[#1c0941] border-0`,
+              headerStyle: tw`bg-[#d6ebf2] border-0`,
               headerTintColor: '#fff',
               headerShadowVisible: false, // gets rid of border on device
             }}
